@@ -16,6 +16,12 @@ const argv = yargs
   .describe('k', 'Confluence space key')
   .alias('t', 'type')
   .describe('t', 'Export file type: xml, html or pdf')
+  .option('v', {
+    alias: 'verbose',
+    describe: 'Enable verbose logging output',
+    type: 'boolean',
+    default: false
+  })
   .option('e', {
     alias: 'envvar',
     describe: 'Path to environment variables file',
@@ -63,4 +69,4 @@ if (argv.envvar) {
 
 const exporter = require('./lib/exporter')
 
-exporter(argv.key, argv.type)
+exporter(argv.key, argv.type, { verbose: argv.verbose })

@@ -166,11 +166,33 @@ Opções:
   --version    Mostra a versão                                         [boolean]
   -k, --key    Chave do espaço no Confluence                         [obrigatório]
   -t, --type   Tipo de exportação: xml, html ou pdf                  [obrigatório]
+  -v, --verbose Ativa logs detalhados para troubleshooting               [boolean]
   -e, --envvar Caminho para o arquivo de variáveis de ambiente
 
 Exemplos:
   confluence-space-exporter -k CAP -t xml
   confluence-space-exporter --envvar ./envvar -k CAP -t xml
+  confluence-space-exporter -k CAP -t xml --verbose
+  confluence-space-exporter -k CAP -t xml -v
+```
+
+### Modo verbose
+
+Utilize a flag opcional `--verbose` (ou `-v`) para habilitar um modo de execução com logs detalhados. Esse recurso é indicado para troubleshooting ou para acompanhar cada etapa do processo de exportação em ambientes avançados.
+
+Quando ativado, o modo verbose exibe:
+
+- Informações adicionais sobre as variáveis de configuração utilizadas (sem revelar senhas).
+- Etapas de autenticação e chamadas à API do Confluence, incluindo respostas retornadas.
+- Progresso detalhado do download, com registro de bytes transferidos e cabeçalhos HTTP.
+- Relatórios de tempo de execução das principais fases (geração da exportação e download).
+- Erros com stack trace completo para facilitar a identificação de problemas.
+
+Exemplos:
+
+```
+confluence-space-exporter -k SPACE_KEY -t xml --verbose
+confluence-space-exporter -k SPACE_KEY -t xml -v
 ```
 
 ## Exemplo
