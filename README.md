@@ -33,6 +33,12 @@ Setup the Confluence login information environment variables, please refer the [
 source envvar
 ```
 
+Alternatively, you can provide the path to the environment variables file directly when running the exporter:
+
+```
+confluence-space-exporter --envvar ./envvar -k CAP -t xml
+```
+
 ## Usage
 
 ```
@@ -43,9 +49,11 @@ Options:
   --version   Show version number                                      [boolean]
   -k, --key   Confluence space key                                    [required]
   -t, --type  Export file type: xml, html or pdf                      [required]
+  -e, --envvar  Path to environment variables file
 
 Examples:
   confluence-space-exporter -k CAP -t xml  Export Confluence space CAP to XML file
+  confluence-space-exporter --envvar ./envvar -k CAP -t xml
 ```
 
 ## Example
