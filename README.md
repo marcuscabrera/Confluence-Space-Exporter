@@ -36,6 +36,55 @@ A exportação em XML abrange praticamente todo o conteúdo de um espaço e perm
 
 ## Instalação
 
+### Instalação do Node.js
+
+#### Ubuntu 24.04
+
+Para instalar a versão mais recente do Node.js e do npm:
+
+```
+sudo apt update
+sudo apt install curl -y
+
+NODE_MAJOR=24
+curl -sL https://deb.nodesource.com/setup_$NODE_MAJOR.x -o nodesource_setup.sh
+sudo bash nodesource_setup.sh
+
+sudo apt install nodejs -y
+
+# Verifique a instalação
+node -v
+npm -v
+```
+
+#### Rocky Linux 9
+
+Para instalar Node.js e npm usando o NodeSource:
+
+```
+sudo dnf install -y curl
+
+NODE_MAJOR=24
+curl -sL https://rpm.nodesource.com/setup_$NODE_MAJOR.x | sudo bash -
+sudo dnf install -y nodejs
+
+# Verifique a instalação
+node -v
+npm -v
+```
+
+#### Windows
+
+1. Acesse o site oficial: https://nodejs.org/en/download
+2. Baixe o instalador Windows (.msi) recomendado para sua arquitetura.
+3. Execute o instalador e siga as instruções na tela (Next > Next > Finish).
+4. Abra o Prompt de Comando (cmd) e verifique a instalação:
+
+```
+node -v
+npm -v
+```
+
 ### Instalação via NPM (global)
 
 Instale a CLI diretamente a partir deste repositório utilizando o NPM:
