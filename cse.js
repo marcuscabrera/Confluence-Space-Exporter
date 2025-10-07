@@ -9,8 +9,9 @@ const path = require('path')
 const yargs = require('yargs')
 
 const argv = yargs
-  .usage('Usage: $0 -k [key] -t [type] | --list-spaces')
+  .usage('Usage: $0 -k [key] -t [type] | --list-spaces | --page [id|title] -t [type]')
   .example('$0 -k CAP -t xml', 'Export Confluence space CAP to XML file')
+  .example('$0 --page "Página X" --with-children -t html -k CAP', 'Export a single page and its descendants')
   .example('$0 --envvar ./envvar -k CAP -t xml', 'Export space using variables from the specified file')
   .alias('k', 'key')
   .describe('k', 'Confluence space key')
@@ -19,6 +20,17 @@ const argv = yargs
   .option('l', {
     alias: 'list-spaces',
     describe: 'List spaces accessible to the authenticated user',
+    type: 'boolean',
+    default: false
+  })
+  .option('p', {
+    alias: 'page',
+    describe: 'Page ID or title to export individually',
+    type: 'string'
+  })
+  .option('c', {
+    alias: 'with-children',
+    describe: 'Include all descendant pages recursively when exporting a single page',
     type: 'boolean',
     default: false
   })
@@ -38,8 +50,15 @@ const argv = yargs
       return true
     }
 
+    if (parsedArgv.page) {
+      if (!parsedArgv.type) {
+        throw new Error('Error: The option --type is required when exporting a page.')
+      }
+      return true
+    }
+
     if (!parsedArgv.key || !parsedArgv.type) {
-      throw new Error('Error: The options --key and --type are required unless --list-spaces is used.')
+      throw new Error('Error: The options --key and --type are required unless --list-spaces or --page is used.')
     }
 
     return true
@@ -84,6 +103,7 @@ if (argv.envvar) {
 }
 
 const exporter = require('./lib/exporter')
+const exportPage = require('./lib/page-exporter')
 const listSpaces = require('./lib/list-spaces')
 
 if (argv.listSpaces) {
@@ -95,6 +115,14 @@ if (argv.listSpaces) {
       }
       process.exit(1)
     })
+} else if (argv.page) {
+  exportPage({
+    key: argv.key,
+    page: argv.page,
+    type: argv.type,
+    withChildren: argv.withChildren,
+    verbose: argv.verbose
+  })
 } else {
   exporter(argv.key, argv.type, { verbose: argv.verbose })
 }
