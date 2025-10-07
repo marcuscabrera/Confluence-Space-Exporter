@@ -159,13 +159,14 @@ Monte os valores conforme o ambiente que você estiver utilizando. Você também
 ## Uso
 
 ```
-Uso: confluence-space-exporter -k [key] -t [type]
+Uso: confluence-space-exporter -k [key] -t [type] | --list-spaces
 
 Opções:
   --help       Mostra a ajuda                                         [boolean]
   --version    Mostra a versão                                         [boolean]
   -k, --key    Chave do espaço no Confluence                         [obrigatório]
   -t, --type   Tipo de exportação: xml, html ou pdf                  [obrigatório]
+  -l, --list-spaces Lista os espaços acessíveis ao usuário autenticado [boolean]
   -v, --verbose Ativa logs detalhados para troubleshooting               [boolean]
   -e, --envvar Caminho para o arquivo de variáveis de ambiente
 
@@ -174,6 +175,8 @@ Exemplos:
   confluence-space-exporter --envvar ./envvar -k CAP -t xml
   confluence-space-exporter -k CAP -t xml --verbose
   confluence-space-exporter -k CAP -t xml -v
+  confluence-space-exporter --list-spaces
+  confluence-space-exporter -l -v
 ```
 
 ### Modo verbose
@@ -194,6 +197,28 @@ Exemplos:
 confluence-space-exporter -k SPACE_KEY -t xml --verbose
 confluence-space-exporter -k SPACE_KEY -t xml -v
 ```
+
+### Listar espaços disponíveis
+
+Utilize a flag `--list-spaces` (ou `-l`) para consultar, sem realizar exportações, todos os espaços que a conta autenticada tem permissão de visualizar. O comando pode ser combinado com `--verbose` para obter detalhes das chamadas à API.
+
+```
+confluence-space-exporter --list-spaces
+```
+
+Exemplo de saída:
+
+```
+Consulting Confluence for accessible spaces...
+Found 3 spaces:
+
+Key  Nome                    Tipo
+CAP  Espaço principal        global
+DOC  Documentação interna    global
+USR  Espaço pessoal João     personal
+```
+
+Caso nenhum espaço seja retornado ou ocorra falha de autenticação, a CLI exibirá uma mensagem de erro amigável com orientações para revisar as credenciais e a conectividade com o Confluence.
 
 ## Exemplo
 
