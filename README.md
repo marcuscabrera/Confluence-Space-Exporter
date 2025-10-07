@@ -159,24 +159,28 @@ Monte os valores conforme o ambiente que você estiver utilizando. Você também
 ## Uso
 
 ```
-Uso: confluence-space-exporter -k [key] -t [type] | --list-spaces
+Uso: confluence-space-exporter -k [key] -t [type] | --list-spaces | --page [id|title] -t [type]
 
 Opções:
-  --help       Mostra a ajuda                                         [boolean]
-  --version    Mostra a versão                                         [boolean]
-  -k, --key    Chave do espaço no Confluence                         [obrigatório]
-  -t, --type   Tipo de exportação: xml, html ou pdf                  [obrigatório]
+  --help          Mostra a ajuda                                      [boolean]
+  --version       Mostra a versão                                      [boolean]
+  -k, --key       Chave do espaço no Confluence            [obrigatório*]
+  -t, --type      Tipo de exportação: xml, html ou pdf               [obrigatório]
   -l, --list-spaces Lista os espaços acessíveis ao usuário autenticado [boolean]
-  -v, --verbose Ativa logs detalhados para troubleshooting               [boolean]
-  -e, --envvar Caminho para o arquivo de variáveis de ambiente
+  -p, --page      Exporta somente a página informada (ID ou título)     [string]
+  -c, --with-children Exporta recursivamente todas as subpáginas         [boolean]
+  -v, --verbose   Ativa logs detalhados para troubleshooting            [boolean]
+  -e, --envvar    Caminho para o arquivo de variáveis de ambiente
+
+(* ) A flag `--key` continua obrigatória para exportações completas de espaço e também quando `--page` receber um título. Para exportar por ID, a chave do espaço é opcional.
 
 Exemplos:
   confluence-space-exporter -k CAP -t xml
   confluence-space-exporter --envvar ./envvar -k CAP -t xml
+  confluence-space-exporter --page "Guia de Integração" -k CAP -t html
+  confluence-space-exporter --page 123456 --with-children -t html
   confluence-space-exporter -k CAP -t xml --verbose
-  confluence-space-exporter -k CAP -t xml -v
   confluence-space-exporter --list-spaces
-  confluence-space-exporter -l -v
 ```
 
 ### Modo verbose
@@ -197,6 +201,17 @@ Exemplos:
 confluence-space-exporter -k SPACE_KEY -t xml --verbose
 confluence-space-exporter -k SPACE_KEY -t xml -v
 ```
+
+### Exportação de páginas individuais
+
+- Utilize `--page` (ou `-p`) para informar o **ID** ou o **título exato** de uma página. Para títulos, informe também o espaço via `--key` para evitar ambiguidades.
+- Combine com `--with-children` (ou `-c`) para exportar automaticamente todas as subpáginas em qualquer profundidade, preservando a hierarquia em diretórios aninhados.
+- Os formatos suportados para exportação individual são **HTML** (`-t html`) e **PDF** (`-t pdf`). O conteúdo principal é salvo em `index.html` (HTML) ou em um arquivo PDF nomeado com o ID da página.
+- Em modo verbose (`--verbose`), o exportador exibe cada página processada, tempos de execução parciais e a árvore de diretórios criada.
+- Se o Confluence retornar múltiplas páginas com o mesmo título, a execução é interrompida e a CLI lista os IDs encontrados para que você escolha o correto.
+- Caso a página ou o ID não sejam encontrados, uma mensagem clara informa o motivo para agilizar o diagnóstico.
+
+> **Atenção:** exportar páginas com um número muito grande de descendentes pode levar mais tempo e consumir recursos adicionais, pois cada página é recuperada individualmente via API. Em ambientes com milhares de páginas filhas, considere limitar a profundidade (não suportado atualmente) ou realizar exportações segmentadas.
 
 ### Listar espaços disponíveis
 
