@@ -9,13 +9,19 @@ const path = require('path')
 const yargs = require('yargs')
 
 const argv = yargs
-  .usage('Usage: $0 -k [key] -t [type]')
+  .usage('Usage: $0 -k [key] -t [type] | --list-spaces')
   .example('$0 -k CAP -t xml', 'Export Confluence space CAP to XML file')
   .example('$0 --envvar ./envvar -k CAP -t xml', 'Export space using variables from the specified file')
   .alias('k', 'key')
   .describe('k', 'Confluence space key')
   .alias('t', 'type')
   .describe('t', 'Export file type: xml, html or pdf')
+  .option('l', {
+    alias: 'list-spaces',
+    describe: 'List spaces accessible to the authenticated user',
+    type: 'boolean',
+    default: false
+  })
   .option('v', {
     alias: 'verbose',
     describe: 'Enable verbose logging output',
@@ -27,7 +33,17 @@ const argv = yargs
     describe: 'Path to environment variables file',
     type: 'string'
   })
-  .demandOption(['k', 't'])
+  .check((parsedArgv) => {
+    if (parsedArgv.listSpaces) {
+      return true
+    }
+
+    if (!parsedArgv.key || !parsedArgv.type) {
+      throw new Error('Error: The options --key and --type are required unless --list-spaces is used.')
+    }
+
+    return true
+  })
   .argv
 
 if (argv.envvar) {
@@ -68,5 +84,17 @@ if (argv.envvar) {
 }
 
 const exporter = require('./lib/exporter')
+const listSpaces = require('./lib/list-spaces')
 
-exporter(argv.key, argv.type, { verbose: argv.verbose })
+if (argv.listSpaces) {
+  listSpaces({ verbose: argv.verbose })
+    .catch((err) => {
+      // listSpaces already logs errors, but ensure non-zero exit code
+      if (err && err.message) {
+        console.error(err.message)
+      }
+      process.exit(1)
+    })
+} else {
+  exporter(argv.key, argv.type, { verbose: argv.verbose })
+}
